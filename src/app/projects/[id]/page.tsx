@@ -119,41 +119,45 @@ export default function ProjectDetailPage() {
             <div className="h-4 bg-gradient-to-r from-emerald-500 to-blue-500" />
             <CardContent className="p-8 space-y-6">
               <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <Badge variant={getStatusVariant(project.status)} className="uppercase tracking-wider">
-                    {project.status}
-                  </Badge>
-              <span className="text-slate-400">•</span>
-              <div className="text-sm text-slate-500 font-medium uppercase tracking-wider">
-                Created {formatDate(project.createdAt)}
-              </div>
-            </div>
-            
-            <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
-              {project.name}
-            </h1>
-            
-            <p className="text-lg text-slate-600 leading-relaxed">
-              {project.description}
-            </p>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Badge variant={getStatusVariant(project.status)} className="uppercase tracking-wider">
+                      {project.status}
+                    </Badge>
+                    <span className="text-slate-400">•</span>
+                    <div className="text-sm text-slate-500 font-medium uppercase tracking-wider">
+                      Created {formatDate(project.createdAt)}
+                    </div>
+                  </div>
+                  
+                  <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
+                    {project.name}
+                  </h1>
+                  
+                  <p className="text-lg text-slate-600 leading-relaxed">
+                    {project.description}
+                  </p>
 
-            {project.links && (
-              <div className="flex gap-4">
-                {project.links.split(',').map(link => (
-                  <a 
-                    key={link}
-                    href={link.trim()} 
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-emerald-600 font-bold hover:underline"
-                  >
-                    <ExternalLink size={16} />
-                    {link.includes('github') ? 'GitHub' : 'Live Demo'}
-                  </a>
-                ))}
+                  {project.links && (
+                    <div className="flex gap-4">
+                      {project.links.split(',').map(link => (
+                        <a 
+                          key={link}
+                          href={link.trim()} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 text-emerald-600 font-bold hover:underline"
+                        >
+                          <ExternalLink size={16} />
+                          {link.includes('github') ? 'GitHub' : 'Live Demo'}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
+            </CardContent>
+          </Card>
 
           <div className="space-y-6">
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
