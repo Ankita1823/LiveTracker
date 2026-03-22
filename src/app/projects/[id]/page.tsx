@@ -73,7 +73,7 @@ export default function ProjectDetailPage() {
     return resourceTags.some(rt => projectTags.includes(rt) || projectTech.includes(rt));
   }).slice(0, 3);
 
-  const getStatusVariant = (status: string) => {
+  const getStatusVariant = (status: string): 'info' | 'warning' | 'success' | 'error' | 'default' => {
     switch (status) {
       case 'Idea': return 'info';
       case 'Building': return 'warning';
@@ -98,7 +98,7 @@ export default function ProjectDetailPage() {
             href={`/projects/${id}/edit`}
             className="p-2 text-slate-400 hover:text-emerald-600 transition-colors"
           >
-            <Edit2 size={18} />
+            <Edit2 size={20} />
           </Link>
           <button 
             onClick={() => {
@@ -108,18 +108,21 @@ export default function ProjectDetailPage() {
             }}
             className="p-2 text-slate-400 hover:text-rose-600 transition-colors"
           >
-            <Trash2 size={18} />
+            <Trash2 size={20} />
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Badge variant={getStatusVariant(project.status) as any} className="uppercase tracking-wider">
-                {project.status}
-              </Badge>
+          <Card className="overflow-hidden">
+            <div className="h-4 bg-gradient-to-r from-emerald-500 to-blue-500" />
+            <CardContent className="p-8 space-y-6">
+              <div className="flex items-start justify-between">
+                <div className="space-y-2">
+                  <Badge variant={getStatusVariant(project.status)} className="uppercase tracking-wider">
+                    {project.status}
+                  </Badge>
               <span className="text-slate-400">•</span>
               <div className="text-sm text-slate-500 font-medium uppercase tracking-wider">
                 Created {formatDate(project.createdAt)}

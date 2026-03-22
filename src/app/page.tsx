@@ -7,7 +7,8 @@ import {
   BookOpen, 
   Bookmark, 
   Flame,
-  ArrowUpRight
+  ArrowUpRight,
+  LucideIcon
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -253,7 +254,7 @@ export default function DashboardPage() {
 interface StatCardProps {
   title: string;
   value: string | number;
-  icon: any;
+  icon: LucideIcon;
   color: 'blue' | 'emerald' | 'amber' | 'rose';
   href?: string;
 }

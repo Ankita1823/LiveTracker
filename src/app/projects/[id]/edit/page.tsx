@@ -30,7 +30,7 @@ export default function EditProjectPage() {
 
   const projectInput: ProjectInput & { id: string } = {
     ...project,
-    status: project.status as any,
+    status: project.status as 'Idea' | 'Building' | 'Shipped' | 'Paused',
     links: project.links || undefined,
   };
 

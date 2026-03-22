@@ -23,7 +23,7 @@ export default function ProjectsPage() {
     (project.techStack && project.techStack.toLowerCase().includes(search.toLowerCase()))
   );
 
-  const getStatusVariant = (status: string) => {
+  const getStatusVariant = (status: string): 'info' | 'warning' | 'success' | 'error' | 'default' => {
     switch (status) {
       case 'Idea': return 'info';
       case 'Building': return 'warning';
@@ -83,7 +83,7 @@ export default function ProjectsPage() {
                     <Layers size={40} className="text-white/20" />
                   </div>
                   <div className="absolute top-4 right-4">
-                    <Badge variant={getStatusVariant(project.status) as any}>
+                    <Badge variant={getStatusVariant(project.status)}>
                       {project.status}
                     </Badge>
                   </div>
