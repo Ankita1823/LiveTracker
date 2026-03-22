@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  scroll-behavior: smooth;
+}
+
+@layer components {
+  .card-premium {
+    @apply bg-white rounded-3xl border border-slate-200 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 hover:border-blue-200;
+  }
+  
+  .prose {
+    @apply text-slate-700 leading-relaxed;
+  }
+  .prose h1 { @apply text-3xl font-bold text-slate-900 mb-6 mt-8; }
+  .prose h2 { @apply text-2xl font-bold text-slate-900 mb-4 mt-6; }
+  .prose h3 { @apply text-xl font-bold text-slate-900 mb-3 mt-5; }
+  .prose p { @apply mb-4; }
+  .prose ul { @apply list-disc pl-6 mb-4; }
+  .prose ol { @apply list-decimal pl-6 mb-4; }
+  .prose li { @apply mb-1; }
+  .prose code { @apply bg-slate-100 px-1.5 py-0.5 rounded text-blue-600 font-mono text-sm; }
+  .prose pre { @apply bg-slate-900 text-slate-50 p-4 rounded-xl overflow-x-auto my-6; }
+  .prose pre code { @apply bg-transparent p-0 text-slate-50; }
+  .prose blockquote { @apply border-l-4 border-blue-500 pl-4 italic text-slate-600 my-6; }
+}
