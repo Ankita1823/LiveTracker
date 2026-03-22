@@ -25,7 +25,7 @@ export function ResourceForm({ initialData, onSuccess }: ResourceFormProps) {
     queryFn: () => fetch('/api/entries').then((res) => res.json()),
   });
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ResourceInput & { entryId?: string }>({
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ResourceInput>({
     resolver: zodResolver(resourceSchema),
     defaultValues: initialData ? {
       title: initialData.title,

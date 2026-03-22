@@ -246,7 +246,7 @@ export default function ResourcesPage() {
         title={editingResource ? 'Edit Resource' : 'Add Resource'}
       >
         <ResourceForm 
-          initialData={editingResource} 
+          initialData={editingResource || undefined} 
           onSuccess={() => setIsModalOpen(false)} 
         />
       </Modal>

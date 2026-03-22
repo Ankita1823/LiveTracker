@@ -30,8 +30,8 @@ export const resourceSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   notes: z.string().optional(),
   tags: z.string().min(1, 'At least one tag is required'),
-  isRead: z.boolean().default(false),
-  isFavorite: z.boolean().default(false),
+  isRead: z.boolean(),
+  isFavorite: z.boolean(),
   projectId: z.string().optional().nullable(),
   entryId: z.string().optional().nullable(),
 });
