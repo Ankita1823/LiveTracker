@@ -165,7 +165,7 @@ export default function DashboardPage() {
             <h3 className="text-lg font-semibold">Top Tech Tags</h3>
           </CardHeader>
           <CardContent className="space-y-6">
-            {stats?.topTags && stats.topTags.length > 0 ? (
+            {Array.isArray(stats?.topTags) && stats.topTags.length > 0 ? (
               stats.topTags.map((tag, idx) => (
                 <div key={tag.tag} className="space-y-2">
                   <div className="flex justify-between items-center text-sm">

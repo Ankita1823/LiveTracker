@@ -37,8 +37,9 @@ export function ProjectForm({ initialData, onSuccess }: ProjectFormProps) {
         body: JSON.stringify(data),
       });
       
-      if (!res.ok) throw new Error('Failed to save project');
-      return res.json();
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to save project');
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });

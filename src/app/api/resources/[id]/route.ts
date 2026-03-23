@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { resourceSchema } from '@/lib/validations';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -21,9 +23,19 @@ export async function GET(
     }
 
     return NextResponse.json(resource);
-  } catch (error) {
+  } catch (error: any) {
     console.error('API Error:', error);
-    return NextResponse.json({ error: 'Failed to fetch resource' }, { status: 500 });
+
+    // Check for database connection errors
+    if (error.code === 'P1001' || error.name === 'PrismaClientInitializationError') {
+      return NextResponse.json(
+        { error: 'Database is not connected. Please check your POSTGRES_PRISMA_URL.' },
+        { status: 503 }
+      );
+    }
+
+    const message = error instanceof Error ? error.message : 'Failed to fetch resource';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -42,15 +54,25 @@ export async function PUT(
       where: { id },
       data: {
         ...data,
-        projectId: data.projectId || null,
-        entries: entryId ? { set: [{ id: entryId }] } : { set: [] },
+        projectId: data.projectId && data.projectId !== "" ? data.projectId : null,
+        entries: entryId && entryId !== "" ? { set: [{ id: entryId }] } : { set: [] },
       },
     });
 
     return NextResponse.json(resource);
-  } catch (error) {
+  } catch (error: any) {
     console.error('API Error:', error);
-    return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
+    
+    // Check for database connection errors
+    if (error.code === 'P1001' || error.name === 'PrismaClientInitializationError') {
+      return NextResponse.json(
+        { error: 'Database is not connected. Please check your POSTGRES_PRISMA_URL.' },
+        { status: 503 }
+      );
+    }
+
+    const message = error instanceof Error ? error.message : 'Invalid data';
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }
 
@@ -64,8 +86,17 @@ export async function DELETE(
       where: { id },
     });
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('API Error:', error);
+
+    // Check for database connection errors
+    if (error.code === 'P1001' || error.name === 'PrismaClientInitializationError') {
+      return NextResponse.json(
+        { error: 'Database is not connected. Please check your POSTGRES_PRISMA_URL.' },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json({ error: 'Failed to delete resource' }, { status: 500 });
   }
 }

@@ -66,7 +66,7 @@ export default function LogPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredEntries?.map((entry) => (
+          {Array.isArray(filteredEntries) && filteredEntries.map((entry) => (
             <Link key={entry.id} href={`/log/${entry.id}`}>
               <Card className="h-full hover:border-blue-400 hover:shadow-lg hover:shadow-blue-900/5 transition-all group">
                 <CardContent className="p-6 flex flex-col h-full">
@@ -103,7 +103,7 @@ export default function LogPage() {
             </Link>
           ))}
           
-          {filteredEntries?.length === 0 && (
+          {(!Array.isArray(filteredEntries) || filteredEntries.length === 0) && (
             <div className="col-span-full py-20 text-center">
               <div className="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
                 <Search size={24} />

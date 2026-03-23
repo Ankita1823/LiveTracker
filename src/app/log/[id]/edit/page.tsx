@@ -13,7 +13,10 @@ export default function EditEntryPage() {
   
   const { data: entry, isLoading } = useQuery<Entry>({
     queryKey: ['entry', id],
-    queryFn: () => fetch(`/api/entries/${id}`).then((res) => res.json()),
+    queryFn: () => fetch(`/api/entries/${id}`).then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch entry');
+      return res.json();
+    }),
   });
 
   if (isLoading) {

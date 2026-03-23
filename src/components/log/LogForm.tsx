@@ -20,7 +20,10 @@ export function LogForm({ initialData, onSuccess }: LogFormProps) {
 
   const { data: projects } = useQuery<Project[]>({
     queryKey: ['projects'],
-    queryFn: () => fetch('/api/projects').then((res) => res.json()),
+    queryFn: () => fetch('/api/projects').then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch projects');
+      return res.json();
+    }),
   });
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<EntryInput>({
@@ -28,8 +31,10 @@ export function LogForm({ initialData, onSuccess }: LogFormProps) {
     defaultValues: initialData ? {
       ...initialData,
       date: initialData.date ? new Date(initialData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      projectId: initialData.projectId || "",
     } : {
       date: new Date().toISOString().split('T')[0],
+      projectId: "",
     },
   });
 
@@ -46,8 +51,9 @@ export function LogForm({ initialData, onSuccess }: LogFormProps) {
         body: JSON.stringify(data),
       });
       
-      if (!res.ok) throw new Error('Failed to save log entry');
-      return res.json();
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to save log entry');
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['entries'] });
@@ -90,7 +96,7 @@ export function LogForm({ initialData, onSuccess }: LogFormProps) {
             className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
           >
             <option value="">None</option>
-            {projects?.map(p => (
+            {Array.isArray(projects) && projects.map(p => (
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </select>

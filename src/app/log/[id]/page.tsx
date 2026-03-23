@@ -27,22 +27,35 @@ export default function EntryDetailPage() {
 
   const { data: entry, isLoading } = useQuery<EntryWithRelations>({
     queryKey: ['entry', id],
-    queryFn: () => fetch(`/api/entries/${id}`).then((res) => res.json()),
+    queryFn: () => fetch(`/api/entries/${id}`).then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch entry');
+      return res.json();
+    }),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: () => fetch(`/api/entries/${id}`, { method: 'DELETE' }),
+    mutationFn: async () => {
+      const res = await fetch(`/api/entries/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to delete entry');
+      }
+      return res.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['entries'] });
       toast.success('Entry deleted successfully');
       router.push('/log');
     },
-    onError: () => toast.error('Failed to delete entry'),
+    onError: (error: Error) => toast.error(error.message),
   });
 
   const { data: allEntries } = useQuery<EntryWithRelations[]>({
     queryKey: ['entries'],
-    queryFn: () => fetch('/api/entries').then((res) => res.json()),
+    queryFn: () => fetch('/api/entries').then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch entries');
+      return res.json();
+    }),
     enabled: !!entry,
   });
 
@@ -62,7 +75,7 @@ export default function EntryDetailPage() {
   }
 
   const entryTags = formatTags(entry.tags).map(t => t.toLowerCase());
-  const relatedLogs = allEntries?.filter(e => {
+  const relatedLogs = Array.isArray(allEntries) ? allEntries.filter(e => {
     if (e.id === entry.id) return false;
     
     // Same project
@@ -71,7 +84,7 @@ export default function EntryDetailPage() {
     // Same tags
     const otherTags = formatTags(e.tags).map(t => t.toLowerCase());
     return otherTags.some(ot => entryTags.includes(ot));
-  }).slice(0, 3);
+  }).slice(0, 3) : [];
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">

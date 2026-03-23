@@ -13,7 +13,10 @@ export default function EditProjectPage() {
   
   const { data: project, isLoading } = useQuery<Project>({
     queryKey: ['project', id],
-    queryFn: () => fetch(`/api/projects/${id}`).then((res) => res.json()),
+    queryFn: () => fetch(`/api/projects/${id}`).then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch project');
+      return res.json();
+    }),
   });
 
   if (isLoading) {

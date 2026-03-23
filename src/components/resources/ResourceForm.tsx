@@ -17,12 +17,18 @@ export function ResourceForm({ initialData, onSuccess }: ResourceFormProps) {
   const queryClient = useQueryClient();
   const { data: projects } = useQuery<Project[]>({
     queryKey: ['projects'],
-    queryFn: () => fetch('/api/projects').then((res) => res.json()),
+    queryFn: () => fetch('/api/projects').then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch projects');
+      return res.json();
+    }),
   });
 
   const { data: entries } = useQuery<Entry[]>({
     queryKey: ['entries'],
-    queryFn: () => fetch('/api/entries').then((res) => res.json()),
+    queryFn: () => fetch('/api/entries').then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch entries');
+      return res.json();
+    }),
   });
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ResourceInput>({
@@ -36,7 +42,7 @@ export function ResourceForm({ initialData, onSuccess }: ResourceFormProps) {
       isRead: initialData.isRead,
       isFavorite: initialData.isFavorite,
       projectId: initialData.projectId || "",
-      entryId: initialData.entries?.[0]?.id || "",
+      entryId: initialData.entries?.[0]?.id || null,
     } : {
       isRead: false,
       isFavorite: false,
@@ -58,8 +64,9 @@ export function ResourceForm({ initialData, onSuccess }: ResourceFormProps) {
         body: JSON.stringify(data),
       });
       
-      if (!res.ok) throw new Error('Failed to save resource');
-      return res.json();
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to save resource');
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resources'] });
@@ -102,7 +109,7 @@ export function ResourceForm({ initialData, onSuccess }: ResourceFormProps) {
           <label className="text-sm font-semibold text-slate-700">Category</label>
           <input 
             {...register('category')}
-            placeholder="e.g. Design, Backend"
+            placeholder="e.g. Article, Video"
             className={cn(
               "w-full px-4 py-2 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-amber-500/20 outline-none transition-all",
               errors.category ? "border-rose-300" : "border-slate-200"
@@ -118,24 +125,24 @@ export function ResourceForm({ initialData, onSuccess }: ResourceFormProps) {
             className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
           >
             <option value="">None</option>
-            {projects?.map(p => (
+            {Array.isArray(projects) && projects.map(p => (
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </select>
         </div>
+      </div>
 
-        <div className="space-y-1">
-          <label className="text-sm font-semibold text-slate-700">Entry (Optional)</label>
-          <select 
-            {...register('entryId')}
-            className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
-          >
-            <option value="">None</option>
-            {entries?.map(e => (
-              <option key={e.id} value={e.id}>{e.title}</option>
-            ))}
-          </select>
-        </div>
+      <div className="space-y-1">
+        <label className="text-sm font-semibold text-slate-700">Entry (Optional)</label>
+        <select 
+          {...register('entryId')}
+          className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
+        >
+          <option value="">None</option>
+          {Array.isArray(entries) && entries.map(e => (
+            <option key={e.id} value={e.id}>{e.title}</option>
+          ))}
+        </select>
       </div>
 
       <div className="space-y-1">

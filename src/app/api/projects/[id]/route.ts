@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { projectSchema } from '@/lib/validations';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -23,8 +25,17 @@ export async function GET(
     }
 
     return NextResponse.json(project);
-  } catch (error) {
+  } catch (error: any) {
     console.error('API Error:', error);
+
+    // Check for database connection errors
+    if (error.code === 'P1001' || error.name === 'PrismaClientInitializationError') {
+      return NextResponse.json(
+        { error: 'Database is not connected. Please check your POSTGRES_PRISMA_URL.' },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json({ error: 'Failed to fetch project' }, { status: 500 });
   }
 }
@@ -44,9 +55,19 @@ export async function PUT(
     });
 
     return NextResponse.json(project);
-  } catch (error) {
+  } catch (error: any) {
     console.error('API Error:', error);
-    return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
+
+    // Check for database connection errors
+    if (error.code === 'P1001' || error.name === 'PrismaClientInitializationError') {
+      return NextResponse.json(
+        { error: 'Database is not connected. Please check your POSTGRES_PRISMA_URL.' },
+        { status: 503 }
+      );
+    }
+
+    const message = error instanceof Error ? error.message : 'Invalid data';
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }
 
@@ -60,8 +81,17 @@ export async function DELETE(
       where: { id },
     });
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('API Error:', error);
+
+    // Check for database connection errors
+    if (error.code === 'P1001' || error.name === 'PrismaClientInitializationError') {
+      return NextResponse.json(
+        { error: 'Database is not connected. Please check your POSTGRES_PRISMA_URL.' },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 });
   }
 }

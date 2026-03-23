@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { startOfDay, subDays, format, isSameDay } from 'date-fns';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const [totalEntries, totalProjects, totalResources, allEntriesForStreak, activityEntries, recentProjects, recentEntries, recentResources] = await Promise.all([
@@ -105,8 +107,17 @@ export async function GET() {
       activityData,
       topTags,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('API Error:', error);
+    
+    // Check for database connection errors
+    if (error.code === 'P1001' || error.name === 'PrismaClientInitializationError') {
+      return NextResponse.json(
+        { error: 'Database is not connected. Please check your POSTGRES_PRISMA_URL.' },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 });
   }
 }

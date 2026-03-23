@@ -59,12 +59,16 @@ export default function ResourcesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to update resource');
+      }
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resources'] });
     },
-    onError: () => toast.error('Failed to update resource'),
+    onError: (err: Error) => toast.error(err.message),
   });
 
   const deleteMutation = useMutation({
@@ -111,7 +115,7 @@ export default function ResourcesPage() {
           />
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2 lg:pb-0">
-          {categories.map((cat) => (
+          {Array.isArray(categories) && categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setCategory(cat)}
@@ -135,7 +139,7 @@ export default function ResourcesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredResources?.map((resource) => (
+          {Array.isArray(filteredResources) && filteredResources.map((resource) => (
             <Card key={resource.id} className="group hover:border-amber-400 transition-all">
               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-4">

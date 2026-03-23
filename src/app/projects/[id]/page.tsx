@@ -28,22 +28,35 @@ export default function ProjectDetailPage() {
 
   const { data: project, isLoading } = useQuery<ProjectWithRelations>({
     queryKey: ['project', id],
-    queryFn: () => fetch(`/api/projects/${id}`).then((res) => res.json()),
+    queryFn: () => fetch(`/api/projects/${id}`).then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch project');
+      return res.json();
+    }),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: () => fetch(`/api/projects/${id}`, { method: 'DELETE' }),
+    mutationFn: async () => {
+      const res = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to delete project');
+      }
+      return res.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       toast.success('Project deleted successfully');
       router.push('/projects');
     },
-    onError: () => toast.error('Failed to delete project'),
+    onError: (error: Error) => toast.error(error.message),
   });
 
   const { data: allResources } = useQuery<ResourceWithRelations[]>({
     queryKey: ['resources'],
-    queryFn: () => fetch('/api/resources').then((res) => res.json()),
+    queryFn: () => fetch('/api/resources').then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch resources');
+      return res.json();
+    }),
     enabled: !!project,
   });
 
@@ -65,13 +78,13 @@ export default function ProjectDetailPage() {
   const projectTags = formatTags(project.tags).map(t => t.toLowerCase());
   const projectTech = formatTags(project.techStack).map(t => t.toLowerCase());
   
-  const recommendedResources = allResources?.filter(r => {
+  const recommendedResources = Array.isArray(allResources) ? allResources.filter(r => {
     // Exclude already linked resources
     if (project.resources.some(pr => pr.id === r.id)) return false;
     
     const resourceTags = formatTags(r.tags).map(t => t.toLowerCase());
     return resourceTags.some(rt => projectTags.includes(rt) || projectTech.includes(rt));
-  }).slice(0, 3);
+  }).slice(0, 3) : [];
 
   const getStatusVariant = (status: string): 'info' | 'warning' | 'success' | 'error' | 'default' => {
     switch (status) {

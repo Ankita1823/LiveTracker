@@ -77,7 +77,7 @@ export default function ProjectsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects?.map((project) => (
+          {Array.isArray(filteredProjects) && filteredProjects.map((project) => (
             <Link key={project.id} href={`/projects/${project.id}`}>
               <Card className="h-full hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-900/5 transition-all group overflow-hidden">
                 <CardHeader className="p-0 border-none relative h-32 bg-slate-900 overflow-hidden">
@@ -124,7 +124,7 @@ export default function ProjectsPage() {
             </Link>
           ))}
           
-          {filteredProjects?.length === 0 && (
+          {(!Array.isArray(filteredProjects) || filteredProjects.length === 0) && (
             <div className="col-span-full py-20 text-center">
               <div className="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
                 <Layers size={24} />
