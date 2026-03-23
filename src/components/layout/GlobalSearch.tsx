@@ -14,19 +14,28 @@ export function GlobalSearch() {
 
   const { data: entries } = useQuery<Entry[]>({
     queryKey: ['entries'],
-    queryFn: () => fetch('/api/entries').then(res => res.json()),
+    queryFn: () => fetch('/api/entries').then(res => {
+      if (!res.ok) throw new Error('Failed to fetch entries');
+      return res.json();
+    }),
     enabled: isOpen,
   });
 
   const { data: projects } = useQuery<Project[]>({
     queryKey: ['projects'],
-    queryFn: () => fetch('/api/projects').then(res => res.json()),
+    queryFn: () => fetch('/api/projects').then(res => {
+      if (!res.ok) throw new Error('Failed to fetch projects');
+      return res.json();
+    }),
     enabled: isOpen,
   });
 
   const { data: resources } = useQuery<Resource[]>({
     queryKey: ['resources'],
-    queryFn: () => fetch('/api/resources').then(res => res.json()),
+    queryFn: () => fetch('/api/resources').then(res => {
+      if (!res.ok) throw new Error('Failed to fetch resources');
+      return res.json();
+    }),
     enabled: isOpen,
   });
 
@@ -42,9 +51,9 @@ export function GlobalSearch() {
   }, []);
 
   const results = {
-    entries: entries?.filter(e => e.title.toLowerCase().includes(query.toLowerCase())).slice(0, 3) || [],
-    projects: projects?.filter(p => p.name.toLowerCase().includes(query.toLowerCase())).slice(0, 3) || [],
-    resources: resources?.filter(r => r.title.toLowerCase().includes(query.toLowerCase())).slice(0, 3) || [],
+    entries: Array.isArray(entries) ? entries.filter(e => e.title.toLowerCase().includes(query.toLowerCase())).slice(0, 3) : [],
+    projects: Array.isArray(projects) ? projects.filter(p => p.name.toLowerCase().includes(query.toLowerCase())).slice(0, 3) : [],
+    resources: Array.isArray(resources) ? resources.filter(r => r.title.toLowerCase().includes(query.toLowerCase())).slice(0, 3) : [],
   };
 
   const hasResults = results.entries.length > 0 || results.projects.length > 0 || results.resources.length > 0;

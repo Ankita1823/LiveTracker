@@ -30,13 +30,13 @@ export function Sidebar() {
       {/* Overlay */}
       {isOpen && (
         <div 
-          className="lg:hidden fixed inset-0 bg-slate-950/60 backdrop-blur-md z-40 transition-all duration-500"
+          className="lg:hidden fixed inset-0 bg-slate-950/60 backdrop-blur-md z-40 transition-all duration-300"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       <div className={cn(
-        "w-72 bg-slate-950 text-white flex flex-col h-screen sticky top-0 transition-all duration-500 z-40 border-r border-slate-900",
+        "w-72 bg-slate-950 text-white flex flex-col h-screen sticky top-0 transition-all duration-300 z-40 border-r border-slate-900",
         "fixed lg:sticky lg:translate-x-0",
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>

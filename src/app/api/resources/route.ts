@@ -14,6 +14,7 @@ export async function GET() {
         },
       },
       orderBy: { updatedAt: 'desc' },
+      take: 100, // Limit results for faster initial load
     });
     return NextResponse.json(resources);
   } catch (error) {

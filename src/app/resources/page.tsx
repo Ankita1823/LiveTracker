@@ -33,12 +33,15 @@ export default function ResourcesPage() {
 
   const { data: resources, isLoading } = useQuery<ResourceWithRelations[]>({
     queryKey: ['resources'],
-    queryFn: () => fetch('/api/resources').then((res) => res.json()),
+    queryFn: () => fetch('/api/resources').then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch resources');
+      return res.json();
+    }),
   });
 
-  const categories = ['All', ...Array.from(new Set(resources?.map(r => r.category) || []))];
+  const categories = ['All', ...Array.from(new Set(Array.isArray(resources) ? resources.map(r => r.category) : []))];
 
-  const filteredResources = resources?.filter((resource) => {
+  const filteredResources = Array.isArray(resources) ? resources.filter((resource) => {
     const matchesSearch = 
       resource.title.toLowerCase().includes(search.toLowerCase()) ||
       (resource.tags && resource.tags.toLowerCase().includes(search.toLowerCase())) ||
@@ -47,7 +50,7 @@ export default function ResourcesPage() {
     const matchesCategory = category === 'All' || resource.category === category;
     
     return matchesSearch && matchesCategory;
-  });
+  }) : [];
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: Partial<ResourceWithRelations> }) => {
@@ -78,7 +81,7 @@ export default function ResourcesPage() {
   });
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900">Resources</h2>

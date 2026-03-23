@@ -14,16 +14,19 @@ export default function LogPage() {
   const [search, setSearch] = useState('');
   const { data: entries, isLoading } = useQuery<EntryWithRelations[]>({
     queryKey: ['entries'],
-    queryFn: () => fetch('/api/entries').then((res) => res.json()),
+    queryFn: () => fetch('/api/entries').then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch entries');
+      return res.json();
+    }),
   });
 
-  const filteredEntries = entries?.filter((entry) => 
+  const filteredEntries = Array.isArray(entries) ? entries.filter((entry) => 
     entry.title.toLowerCase().includes(search.toLowerCase()) ||
     entry.tags.toLowerCase().includes(search.toLowerCase())
-  );
+  ) : [];
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900">Learning Log</h2>

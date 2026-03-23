@@ -6,7 +6,7 @@ DevLog is a production-ready application for developers to track their learning 
 - **Framework:** Next.js 15 (App Router)
 - **Language:** TypeScript (Strict Mode)
 - **Styling:** Tailwind CSS
-- **Database:** SQLite with Prisma ORM
+- **Database:** PostgreSQL with Prisma ORM (Optimized for Vercel Postgres)
 - **Validation:** Zod
 - **Data Fetching:** React Query (TanStack Query)
 - **Charts:** Recharts
@@ -22,10 +22,19 @@ DevLog is a production-ready application for developers to track their learning 
 npm install --legacy-peer-deps
 ```
 
-### 3. Database Setup
+### 3. Database Setup (Vercel Postgres)
+To deploy this project to Vercel with a database:
+
+1. Go to your **Vercel Dashboard** -> **Storage** tab.
+2. Create a **Postgres** database and click **Connect** to your project.
+3. Vercel will automatically add the `POSTGRES_PRISMA_URL` and `POSTGRES_URL_NON_POOLING` environment variables.
+
+To sync your database locally (if you have Postgres installed) or in production:
 ```bash
-# Initialize Prisma and create the SQLite database
+# Generate the Prisma client
 npx prisma generate
+
+# Push your schema to the cloud database
 npx prisma db push
 
 # Seed the database with sample data

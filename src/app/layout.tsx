@@ -6,7 +6,10 @@ import { GlobalSearch } from "@/components/layout/GlobalSearch";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { Toaster } from "react-hot-toast";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: "DevLog - Developer Learning Journal",

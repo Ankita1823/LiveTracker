@@ -32,12 +32,18 @@ export default function DashboardPage() {
   const [isMounted, setIsMounted] = useState(false);
   const { data: stats, isLoading: statsLoading } = useQuery<DashboardStats>({
     queryKey: ['stats'],
-    queryFn: () => fetch('/api/stats').then((res) => res.json()),
+    queryFn: () => fetch('/api/stats').then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch stats');
+      return res.json();
+    }),
   });
 
   const { data: entries, isLoading: entriesLoading } = useQuery<EntryWithRelations[]>({
     queryKey: ['entries'],
-    queryFn: () => fetch('/api/entries').then((res) => res.json()),
+    queryFn: () => fetch('/api/entries').then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch entries');
+      return res.json();
+    }),
   });
 
   useEffect(() => {
@@ -50,11 +56,11 @@ export default function DashboardPage() {
     return <DashboardLoading />;
   }
 
-  const recentEntries = entries?.slice(0, 5);
+  const recentEntries = Array.isArray(entries) ? entries.slice(0, 5) : [];
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-1000">
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="relative overflow-hidden bg-slate-900 rounded-3xl p-8 lg:p-12 text-white shadow-2xl shadow-blue-900/20">
         <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-blue-600 rounded-full blur-[100px] opacity-20 animate-pulse" />
         <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-64 h-64 bg-emerald-600 rounded-full blur-[100px] opacity-20 animate-pulse" />

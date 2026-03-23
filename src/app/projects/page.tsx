@@ -14,14 +14,17 @@ export default function ProjectsPage() {
   const [search, setSearch] = useState('');
   const { data: projects, isLoading } = useQuery<ProjectWithRelations[]>({
     queryKey: ['projects'],
-    queryFn: () => fetch('/api/projects').then((res) => res.json()),
+    queryFn: () => fetch('/api/projects').then((res) => {
+      if (!res.ok) throw new Error('Failed to fetch projects');
+      return res.json();
+    }),
   });
 
-  const filteredProjects = projects?.filter((project) => 
+  const filteredProjects = Array.isArray(projects) ? projects.filter((project) => 
     project.name.toLowerCase().includes(search.toLowerCase()) ||
     (project.tags && project.tags.toLowerCase().includes(search.toLowerCase())) ||
     (project.techStack && project.techStack.toLowerCase().includes(search.toLowerCase()))
-  );
+  ) : [];
 
   const getStatusVariant = (status: string): 'info' | 'warning' | 'success' | 'error' | 'default' => {
     switch (status) {
@@ -34,7 +37,7 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900">Projects</h2>
