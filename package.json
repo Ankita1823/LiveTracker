@@ -9,7 +9,7 @@
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
-    "vercel-build": "prisma generate && prisma db push && next build",
+    "vercel-build": "prisma generate && next build",
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
     "postinstall": "prisma generate"
   },
